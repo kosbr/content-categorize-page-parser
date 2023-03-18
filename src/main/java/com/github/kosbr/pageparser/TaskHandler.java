@@ -1,14 +1,13 @@
 package com.github.kosbr.pageparser;
 
-import com.github.kosbr.pageparser.event.TaskEvent;
+import com.github.kosbr.pageparser.event.ParseEvent;
+import com.github.kosbr.pageparser.repository.ExternalEventRepository;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -27,15 +26,19 @@ public class TaskHandler {
     @Value("${configuration.expire:1}")
     private Integer contentExpireDays;
 
-    @Autowired
     private final RedisTemplate<String, String> redisTemplate;
 
-    public TaskHandler(RedisTemplate<String, String> redisTemplate) {
+    private final ExternalEventRepository externalEventRepository;
+
+
+    public TaskHandler(RedisTemplate<String, String> redisTemplate,
+                       ExternalEventRepository externalEventRepository) {
         this.redisTemplate = redisTemplate;
+        this.externalEventRepository = externalEventRepository;
     }
 
     // todo metrics
-    public void handle(TaskEvent payload) {
+    public void handle(ParseEvent payload) {
         LOG.info("Going to hanlde " + payload);
         validateTask(payload);
         try {
@@ -50,9 +53,10 @@ public class TaskHandler {
             throw new RuntimeException(e);
         }
         LOG.info("Handled" + payload);
+        externalEventRepository.sendEventToCategorize(payload.getTaskId());
     }
 
-    private void validateTask(TaskEvent payload) {
+    private void validateTask(ParseEvent payload) {
         if (payload.getTaskId() == null) {
             throw new IllegalArgumentException("wrong event, task id is null");
         }
