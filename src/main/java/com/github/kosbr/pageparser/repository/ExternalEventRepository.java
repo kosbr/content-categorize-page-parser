@@ -13,9 +13,6 @@ public class ExternalEventRepository {
     @Value("${configuration.matcher-exchange}")
     private String matcherExchange;
 
-    @Value("${configuration.result-exchange}")
-    private String resultExchange;
-
     private final StreamBridge streamBridge;
 
     public ExternalEventRepository(StreamBridge streamBridge) {
