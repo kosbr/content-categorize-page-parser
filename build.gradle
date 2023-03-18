@@ -6,14 +6,11 @@ plugins {
 
 
 group 'com.github.kosbr.pageparser'
-version '1.0-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
 }
-
-
 
 dependencies {
     implementation "org.jsoup:jsoup:${jsoupVersion}"
