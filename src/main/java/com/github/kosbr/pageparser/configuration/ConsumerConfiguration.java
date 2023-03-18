@@ -1,7 +1,7 @@
 package com.github.kosbr.pageparser.configuration;
 
 import com.github.kosbr.pageparser.TaskHandler;
-import com.github.kosbr.pageparser.event.TaskEvent;
+import com.github.kosbr.pageparser.event.ParseEvent;
 import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ public class ConsumerConfiguration {
     private TaskHandler taskConsumer;
 
     @Bean
-    public Consumer<Message<TaskEvent>> contentChannelStreamFunction() {
+    public Consumer<Message<ParseEvent>> contentChannelStreamFunction() {
         return taskEventMessage -> taskConsumer.handle(taskEventMessage.getPayload());
     }
 

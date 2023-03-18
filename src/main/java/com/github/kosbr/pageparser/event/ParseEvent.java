@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class TaskEvent {
+public class ParseEvent {
 
     private UUID taskId;
     private String url;

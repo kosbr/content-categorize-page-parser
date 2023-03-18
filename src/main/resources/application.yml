@@ -33,3 +33,4 @@ configuration:
   timeout: 10000
       # delete parsed content after 1 day
   expire: 1
+  matcher-exchange: matcher-exchange
