@@ -31,3 +31,5 @@ configuration:
       max: 1067008
       # do not wait for a page more than (seconds)
   timeout: 10000
+      # delete parsed content after 1 day
+  expire: 1

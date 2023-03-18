@@ -2,6 +2,7 @@ package com.github.kosbr.pageparser;
 
 import com.github.kosbr.pageparser.event.TaskEvent;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,6 +24,9 @@ public class TaskHandler {
     @Value("${configuration.timeout:10000}")
     private Integer timeoutMs;
 
+    @Value("${configuration.expire:1}")
+    private Integer contentExpireDays;
+
     @Autowired
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -40,7 +44,7 @@ public class TaskHandler {
                     .timeout(timeoutMs)
                     .get();
             String text = doc.body().text();
-            redisTemplate.opsForValue().set(payload.getTaskId().toString(), text);
+            redisTemplate.opsForValue().set(payload.getTaskId().toString(), text, contentExpireDays, TimeUnit.DAYS);
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
             throw new RuntimeException(e);
