@@ -42,11 +42,14 @@ public class TaskHandler {
         LOG.info("Going to hanlde " + payload);
         validateTask(payload);
         try {
+            // potential improvement: read the page in a stream and create "part" events.
+            // this would allow us to handle bigger pages. Currently, I have to set the limit.
             Document doc = Jsoup.connect(payload.getUrl())
                     .maxBodySize(maxBodySizeBytes)
                     .timeout(timeoutMs)
                     .get();
             String text = doc.body().text();
+            // set expiration to avoid overflow. Assuming it is enough to handle it and provide the results.
             redisTemplate.opsForValue().set(payload.getTaskId().toString(), text, contentExpireDays, TimeUnit.DAYS);
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
@@ -54,6 +57,8 @@ public class TaskHandler {
         }
         LOG.info("Handled" + payload);
         externalEventRepository.sendEventToCategorize(payload.getTaskId());
+        // todo I should count attempts and send ERROR event in case I can't handle it with the max number of attempts.
+        // in such case events will be in ddl, but user will be notified that something went wrong.
     }
 
     private void validateTask(ParseEvent payload) {

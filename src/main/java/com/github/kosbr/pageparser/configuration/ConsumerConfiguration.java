@@ -14,6 +14,10 @@ public class ConsumerConfiguration {
     @Autowired
     private TaskHandler taskConsumer;
 
+    /**
+     * This bean consumes the events from API Manager to read the contents of the page
+     * @return
+     */
     @Bean
     public Consumer<Message<ParseEvent>> contentChannelStreamFunction() {
         return taskEventMessage -> taskConsumer.handle(taskEventMessage.getPayload());

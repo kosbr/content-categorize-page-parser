@@ -24,6 +24,10 @@ public class ExternalEventRepository {
         this.streamBridge = streamBridge;
     }
 
+    /**
+     * Sends event to another service asking to categorize gathered content of the page.
+     * @param taskId
+     */
     public void sendEventToCategorize(UUID taskId) {
         CategorizeEvent event = new CategorizeEvent(taskId);
         streamBridge.send(matcherExchange, MessageBuilder.withPayload(event).build());
